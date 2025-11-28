@@ -15,25 +15,53 @@ interpreter.allocate_tensors()
 input_details = interpreter.get_input_details()
 output_details = interpreter.get_output_details()
 
-# Prepare a test input (example: temperature=30°C, humidity=60%, pressure=1012 hPa)
-test_input = np.array([[18.0, 60.0]], dtype=np.float32)
-normalized_input = (test_input - [24.5, 67.5]) / [6.42261629, 22.5]
+test_inputs = [
+    [33, 31],
+    [35, 40],
+    [38, 43],
+    [40, 35],
+    [20, 88],
+    [22, 85],
+    [25, 90],
+    [26, 82],
+    [15, 94],
+    [17, 92],
+    [18, 97],
+    [19, 91],
+    [27, 53],
+    [28, 55],
+    [29, 58],
+    [31, 50],
+    [24, 60],
+    [23, 83],
+    [25.5, 70],
+    [30, 62],
+    [32, 48],
+    [21, 80],
+    [16, 60],
+    [26, 65]
+]
 
-# If you used StandardScaler during training, normalize test_input here the same way
+for t, h in test_inputs:
+    # Prepare a test input (example: temperature=30°C, humidity=60%, pressure=1012 hPa)
+    test_input = np.array([[t, h]], dtype=np.float32)
+    normalized_input = (test_input - [28.7254902, 60.01960784]) / [7.33226973, 23.07355567]
 
-# Set the input tensor
-interpreter.set_tensor(input_details[0]['index'], normalized_input.astype(np.float32))
+    # If you used StandardScaler during training, normalize test_input here the same way
 
-# Run inference
-interpreter.invoke()
+    # Set the input tensor
+    interpreter.set_tensor(input_details[0]['index'], normalized_input.astype(np.float32))
 
-# Get the output
-output_data = interpreter.get_tensor(output_details[0]['index'])
-print("Raw output:", output_data)
+    # Run inference
+    interpreter.invoke()
 
-# Get predicted label
-predicted_index = np.argmax(output_data[0])
-# labels = ["Hot", "Rainy", "Foggy", "Sunny", ]  # Use the same order as in your training
+    # Get the output
+    output_data = interpreter.get_tensor(output_details[0]['index'])
+    # print("Raw output:", output_data)
 
-print("Predicted condition:", le.classes_[predicted_index])
+    # Get predicted label
+    predicted_index = np.argmax(output_data[0])
+    # labels = ["Hot", "Rainy", "Foggy", "Sunny", ]  # Use the same order as in your training
+
+    print("######## Predicted condition:", le.classes_[predicted_index])
 
